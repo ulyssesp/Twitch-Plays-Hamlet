@@ -10,10 +10,10 @@ $(document).ready(function (){
 		socket.emit('emotions', {l: emotionList.length});
 	}
 
-request.open('GET', '../assets/emotions.txt', true);
-request.send();
+	request.open('GET', '../assets/emotions.txt', true);
+	request.send();
 
-	
+
 	socket.on('entrance', function (data){
 		myID = data.id;
 		message = data.message;
@@ -26,7 +26,11 @@ request.send();
 	})
 
 	$('.choice').click(function(){
-		socket.emit('vote', {vote: $(this).html()})
+		socket.emit('vote',
+			{
+				vote: $(this).html(),
+				id: myID
+			});
 	})
 
 })

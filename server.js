@@ -6,12 +6,14 @@ var io = require('socket.io'),
 var ID = 0,
 	emotionListLength;
 
+var votedIds = [];
+
 
 room.sockets.on('connection', function(socket){
 
 	socket.emit('entrance', {
 		message:'Welome to Twitch Plays Hamlet. Choose an emotion for our actors.',
-		id: ID,
+		id: ID
 	});
 	ID++;
 
@@ -27,11 +29,23 @@ room.sockets.on('connection', function(socket){
 		setInterval(function(){
 			socket.emit('newEmotion', {emotionOne: Math.floor(Math.random() * emotionListLength),
 			emotionTwo: Math.floor(Math.random() * emotionListLength)})
+			votedIds = [];
 		}, 3000)
 	})
 
 	socket.on('vote', function(data){
-		console.log(data.vote);
-	})
+		// Compatibility for < ES5
+		if(votedIds.indexOf === undefined) {
+			console.log("Compatibility");
+			for(var i=0; i < votedIds.length; i++) {
+				if(votedIds[i] === data.id) return;
+			}
+		}
+		else if(votedIds.indexOf(data.id) != -1){
+			return;
+		}
 
+		console.log(data.vote);
+		votedIds.push(data.id);
+	})
 })
