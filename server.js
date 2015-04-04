@@ -3,19 +3,27 @@ var io = require('socket.io'),
 	app = connect().use(connect.static('public')).listen(8000),
 	room = io.listen(app);
 
-var ID = 0,
-	emotionListLength;
+var emotionListLength;
+
 
 var votedIds = [];
 
 
 room.sockets.on('connection', function(socket){
+	// From http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+	function guid () {
+		function s4() {
+			 return Math.floor((1 + Math.random()) * 0x10000);
+		};
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4() + s4();
+	}
+
+	var id = guid();
 
 	socket.emit('entrance', {
 		message:'Welome to Twitch Plays Hamlet. Choose an emotion for our actors.',
-		id: ID
+		id: id,
 	});
-	ID++;
 
 	socket.on('emotions', function(data){
 		emotionListLength = data.l;
@@ -48,4 +56,4 @@ room.sockets.on('connection', function(socket){
 		console.log(data.vote);
 		votedIds.push(data.id);
 	})
-})
+});
